@@ -1,0 +1,7 @@
+# Flexbar — demultiplexing, barcode/adapter trimming (with --umi-tags).
+name: opticlip-flexbar
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - flexbar

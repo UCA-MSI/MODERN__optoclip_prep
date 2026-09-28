@@ -1,0 +1,7 @@
+# cutadapt — adapter/barcode trimming and paired length filtering.
+name: opticlip-cutadapt
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - cutadapt

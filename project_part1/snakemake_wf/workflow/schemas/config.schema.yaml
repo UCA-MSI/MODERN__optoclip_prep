@@ -1,0 +1,88 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: optiCLIP global configuration
+type: object
+properties:
+  project_name:
+    type: string
+  samples:
+    type: string
+  raw_reads:
+    type: object
+    properties:
+      r1: {type: string}
+      r2: {type: string}
+    required: [r1, r2]
+  read_structure:
+    type: object
+    properties:
+      umi1_len: {type: integer, minimum: 0}
+      barcode_len: {type: integer, minimum: 1}
+      umi2_len: {type: integer, minimum: 0}
+    required: [umi1_len, barcode_len, umi2_len]
+  preprocess:
+    type: object
+    properties:
+      barcode_qc_length: {type: integer, minimum: 1}
+      quality_threshold: {type: integer}
+      quality_percent: {type: integer, minimum: 0, maximum: 100}
+    required: [barcode_qc_length, quality_threshold, quality_percent]
+  demux:
+    type: object
+    properties:
+      barcode_error_rate: {type: number, minimum: 0}
+      barcode_trim_end: {type: string}
+      min_read_length: {type: integer, minimum: 1}
+      umi_tags: {type: boolean}
+    required: [barcode_error_rate, barcode_trim_end, min_read_length]
+  trim:
+    type: object
+    properties:
+      r1_adapter: {type: string}
+      r2_adapter_flank5: {type: string}
+      r2_adapter_flank3: {type: string}
+      min_length: {type: integer, minimum: 1}
+    required: [r1_adapter, r2_adapter_flank5, r2_adapter_flank3, min_length]
+  reference:
+    type: object
+    properties:
+      genome_fasta: {type: string}
+      gtf: {type: string}
+      star_index: {type: string}
+      novoalign_index: {type: string}
+      mirna_genome_bowtie_index: {type: string}
+      mirbase_bowtie_index: {type: string}
+    required: [genome_fasta, gtf, star_index, novoalign_index]
+  mirna:
+    type: object
+    properties:
+      mirbase_mature_fa: {type: string}
+      species_tag: {type: string}
+      min_length: {type: integer, minimum: 1}
+      max_length: {type: integer, minimum: 1}
+      annotation_regex: {type: string}
+    required: [mirbase_mature_fa, species_tag, min_length, max_length, annotation_regex]
+  merge_before_mapping:
+    type: array
+    items: {type: string}
+  conditions:
+    type: object
+    additionalProperties:
+      type: array
+      items: {type: string}
+  peaks:
+    type: object
+    properties:
+      extend: {type: integer, minimum: 0}
+      p_value: {type: number, minimum: 0, maximum: 1}
+    required: [extend, p_value]
+required:
+  - project_name
+  - samples
+  - raw_reads
+  - read_structure
+  - preprocess
+  - demux
+  - trim
+  - reference
+  - conditions
+  - peaks

@@ -1,0 +1,29 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: optiCLIP sample sheet — one row per barcode-level unit
+type: object
+properties:
+  sample_id:
+    type: string
+    pattern: "^[0-9]+_[0-9]+$"
+    description: unit id <group>_<barcode index>
+  sample_group:
+    type: string
+    pattern: "^[0-9]+$"
+    description: biological sample id
+  condition:
+    type: string
+    description: experimental condition (e.g. control, KD)
+  flexbar_barcode:
+    type: string
+    pattern: "^[ACGTNacgtn]+$"
+    description: R1 antisense barcode used by flexbar
+  r2_barcode:
+    type: string
+    pattern: "^[ACGTNacgtn]+$"
+    description: R2 sense barcode used in the cutadapt R2 adapter
+required:
+  - sample_id
+  - sample_group
+  - condition
+  - flexbar_barcode
+  - r2_barcode

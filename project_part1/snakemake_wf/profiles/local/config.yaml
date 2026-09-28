@@ -1,0 +1,11 @@
+# Local execution profile.
+#   snakemake --workflow-profile profiles/local
+cores: 8
+use-conda: true
+conda-frontend: mamba
+printshellcmds: true
+rerun-incomplete: true
+keep-going: false
+# Reproducible runs: prefer software-deployment via conda.
+software-deployment-method:
+  - conda
