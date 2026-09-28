@@ -1,8 +1,0 @@
-# UMI-tools — UMI-aware PCR deduplication (+ samtools for index/sort).
-name: opticlip-umitools
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - umi_tools
-  - samtools

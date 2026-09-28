@@ -1,7 +1,0 @@
-# FastQC — per-stage read quality control.
-name: opticlip-fastqc
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - fastqc

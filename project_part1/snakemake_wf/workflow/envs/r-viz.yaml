@@ -1,8 +1,0 @@
-# R + ggplot2 — peak-length histograms.
-name: opticlip-r-viz
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - r-base
-  - r-ggplot2

@@ -1,9 +1,0 @@
-# FASTX-Toolkit (trimmer, quality filter, fastq->fasta, clipping histogram)
-# and seqtk (subseq). Used across P1/P2b.
-name: opticlip-fastx
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - fastx_toolkit
-  - seqtk

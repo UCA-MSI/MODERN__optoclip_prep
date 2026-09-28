@@ -1,7 +1,0 @@
-# gffread — GTF to BED conversion for the pyicos region file.
-name: opticlip-gffread
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - gffread

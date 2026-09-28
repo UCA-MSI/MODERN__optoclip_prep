@@ -1,9 +1,0 @@
-# Plain R — cross-sample miRNA count merge (base `merge`/`read.delim`/
-# `write.csv` only, no plotting). Separate from r-viz.yaml (ggplot2) to
-# keep the peak-length-histogram env free of unrelated dependencies.
-name: opticlip-r-base
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - r-base

@@ -1,9 +1,0 @@
-# Bowtie 1 — builds/queries the miRBase and genome indices consumed by
-# SPORTS1.1 (sports.pl -g/-m). Distinct from bowtie2 and from STAR's own
-# genome index; SPORTS hard-requires Bowtie 1 (draft comment l.86-88).
-name: opticlip-bowtie1
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - bowtie=1

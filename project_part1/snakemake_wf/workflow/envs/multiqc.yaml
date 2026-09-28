@@ -1,7 +1,0 @@
-# MultiQC — aggregate FastQC (and tool logs) into one report.
-name: opticlip-multiqc
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - multiqc

@@ -1,7 +1,0 @@
-# bedtools — BAM to BED conversion.
-name: opticlip-bedtools
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - bedtools

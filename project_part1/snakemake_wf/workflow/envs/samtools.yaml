@@ -1,7 +1,0 @@
-# samtools — sort / merge / index / view.
-name: opticlip-samtools
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - samtools
