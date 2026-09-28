@@ -1,0 +1,7 @@
+# STAR — spliced genomic alignment (index + alignReads).
+name: opticlip-star
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - star

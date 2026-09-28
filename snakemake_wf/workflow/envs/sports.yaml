@@ -1,0 +1,14 @@
+# SPORTS1.1 (Shi et al. 2018, https://github.com/junchaoshi/sports1.1)
+# — small non-coding RNA annotation, driven by sports.pl.
+# NB: SPORTS is NOT packaged on bioconda/PyPI. It ships as a Perl script
+# tree you clone from GitHub and add to PATH (draft l.78-84:
+# `export PATH=".../sports1.1:$PATH"`, `.../sports1.1/source:$PATH`).
+# This env only provides the Perl runtime; install SPORTS itself per its
+# README (see install/setup.sh) and make sure `sports.pl` resolves on
+# PATH before running rule `sports_annotate`.
+name: opticlip-sports
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - perl

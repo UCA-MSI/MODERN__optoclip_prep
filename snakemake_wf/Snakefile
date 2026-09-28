@@ -1,0 +1,74 @@
+# =====================================================================
+# optiCLIP — Paired-End iCLIP-seq — Snakemake entrypoint
+# =====================================================================
+# Migration of draft_code/raw_bash/script.txt into a modular workflow.
+# Scientific parameters live in config/config.yaml and config/samples.tsv;
+# rules are grouped by pipeline phase under workflow/rules/.
+
+
+configfile: "config/config.yaml"
+
+
+# ---- Modules (common.smk must come first: it defines the helpers) ----
+include: "workflow/rules/common.smk"
+include: "workflow/rules/qc.smk"
+include: "workflow/rules/preprocess.smk"
+include: "workflow/rules/demux.smk"
+include: "workflow/rules/trim.smk"
+include: "workflow/rules/fasta.smk"
+include: "workflow/rules/mapping.smk"
+include: "workflow/rules/dedup.smk"
+include: "workflow/rules/peakcalling.smk"
+include: "workflow/rules/mirna.smk"
+
+
+# ---- Final targets ---------------------------------------------------
+rule all:
+    input:
+        # QC
+        "results/qc/multiqc/multiqc_report.html",
+        "results/preprocess/exp_barcodes_R1.detected",
+        # read-length diagnostics per unit
+        expand("results/fasta/{sample}_{read}.readlength.png", sample=UNITS, read=["1", "2"]),
+        # peak calling per biological sample
+        expand("results/peaks/{group}.genome_sorted.pk", group=GROUPS),
+        expand("results/peaks/{group}.peaklength.pdf", group=GROUPS),
+        # per-condition merged alignments
+        expand("results/dedup/condition/{condition}.sorted.sam", condition=list(CONDITIONS)),
+
+
+# ---- Convenience sub-targets (run e.g. `snakemake preprocess`) -------
+rule preprocess:
+    input:
+        "results/preprocess/R1_subset.fastq.gz",
+        "results/preprocess/R2_subset.fastq.gz",
+        "results/preprocess/exp_barcodes_R1.detected",
+
+
+rule trimming:
+    input:
+        expand("results/trim/final/{sample}_{read}.fastq.gz", sample=UNITS, read=["1", "2"]),
+
+
+rule mapping:
+    input:
+        expand("results/mapping/merged/{munit}.sorted.bam", munit=MAPPING_UNITS),
+
+
+rule dedup:
+    input:
+        expand("results/dedup/group/{group}.dedup.sorted.bam", group=GROUPS),
+
+
+rule peaks:
+    input:
+        expand("results/peaks/{group}.genome_sorted.pk", group=GROUPS),
+        expand("results/peaks/{group}.peaklength.pdf", group=GROUPS),
+
+
+# Independent branch (SPORTS1.1 miRNA profiling, mirna.smk) — not part of
+# `all` (has documented modeling assumptions, see mirna.smk header and
+# docs/02_miRNA_script_uml_audit.md). Run explicitly: `snakemake mirna`.
+rule mirna:
+    input:
+        "results/mirna/merged_counts_SPORTS_miRNAs.csv",

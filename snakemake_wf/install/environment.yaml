@@ -1,0 +1,14 @@
+# Controller environment: what you need to *drive* the workflow.
+# Per-tool software is deployed by Snakemake itself (workflow/envs/*.yaml)
+# or via the Singularity image (install/Singularity.def).
+name: opticlip
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python>=3.11
+  - snakemake>=8
+  - snakemake-executor-plugin-slurm
+  - pandas
+  - mamba
+  - apptainer            # to build/run the Singularity image (optional)

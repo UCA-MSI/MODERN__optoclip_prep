@@ -1,0 +1,137 @@
+# =====================================================================
+# optiCLIP — Paired-End iCLIP-seq workflow — global configuration
+# ---------------------------------------------------------------------
+# Every scientific parameter of the original Bash script lives here so
+# that no value is hard-coded in the rules. Values reproduce the draft
+# script exactly unless documented otherwise.
+# =====================================================================
+
+project_name: "optiCLIP_paired_end"
+
+# ---- Sample sheet ---------------------------------------------------
+samples: "config/samples.tsv"
+
+# ---- Raw input (single multiplexed library, paired-end) -------------
+raw_reads:
+  r1: "resources/reads/iClip_S1_R1_001.fastq.gz"
+  r2: "resources/reads/iClip_S1_R2_001.fastq.gz"
+
+# ---- Read structure (iCLIP R1 5' technical region) ------------------
+# UMI1 (5) + experimental barcode (6) + UMI2 (4) = 15 nt
+read_structure:
+  umi1_len: 5
+  barcode_len: 6
+  umi2_len: 4
+
+# ---- P1 : preprocessing / barcode-region quality control ------------
+preprocess:
+  # Length of the R1 5' region kept for quality filtering.
+  #   15 = Option B (UMI1+barcode+UMI2, default, last one run in the script)
+  #    6 = Option A (barcode only)
+  barcode_qc_length: 15
+  quality_threshold: 10   # fastq_quality_filter -q
+  quality_percent: 100    # fastq_quality_filter -p
+
+# ---- P2a : demultiplexing (flexbar) ---------------------------------
+demux:
+  barcode_error_rate: 0
+  barcode_trim_end: "LTAIL"
+  min_read_length: 10
+  umi_tags: true
+
+# ---- P2b : trimming (cutadapt) --------------------------------------
+trim:
+  r1_adapter: "AGATCGGAAGAGCGGTTCAG"   # 3' adapter on R1
+  # R2 3' adapter = <flank5><sample sense barcode><flank3>
+  r2_adapter_flank5: "NNNN"
+  r2_adapter_flank3: "NNNNN"
+  min_length: 10                        # cutadapt --minimum-length (paired)
+
+# ---- Reference genome / annotation (P3, P6) -------------------------
+reference:
+  genome_fasta: "resources/genome/GRCh38.p14.genome.fa"
+  gtf: "resources/genome/gencode.v44.chr_patch_hapl_scaff.annotation.gtf"
+  star_index: "resources/genome/star_index"
+  novoalign_index: "resources/genome/human_genome.nix"
+  # Bowtie1 indices for the miRNA branch (mirna.smk) — distinct from the
+  # STAR/Novoalign indices above, which SPORTS1.1 cannot use.
+  mirna_genome_bowtie_index: "resources/genome/bowtie1_genome_index"
+  mirbase_bowtie_index: "resources/mirna/bowtie_index"
+
+# ---- STAR (P3) ------------------------------------------------------
+star:
+  sjdb_overhang: 84
+  extra: >-
+    --outFilterMismatchNoverReadLmax 0.04
+    --outFilterMismatchNmax 999
+    --outFilterMultimapNmax 1
+    --alignEndsType Extend5pOfRead1
+    --outReadsUnmapped Fastx
+    --outSJfilterReads Unique
+    --outSAMtype BAM SortedByCoordinate
+    --outSAMattributes All
+
+# ---- Novoalign (P3, rescue of STAR-unmapped reads) ------------------
+# NB: Novoalign is proprietary; installed outside conda (see install/).
+novoalign:
+  threshold: 85      # -t
+  min_len: 15        # -l
+  repeat: "A 10"     # -r
+  index_kmer: 14     # novoindex -k
+  index_step: 3      # novoindex -s
+
+# ---- miRNA profiling (SPORTS1.1 post-processing, mirna.smk) ---------
+# Independent branch, migrated from draft_code/raw_bash/2_script_miRNA.txt
+# (see docs/02_miRNA_script_uml_audit.md). Reuses results/trim/lenfilter/
+# from the phases above; not part of the default `all` target — run
+# explicitly with `snakemake mirna`.
+mirna:
+  # Raw miRBase mature.fa (download from https://www.mirbase.org/) — stage
+  # it at this path before running the miRNA branch.
+  mirbase_mature_fa: "resources/mirna/mature.fa"
+  species_tag: "Homo sapiens"   # grep filter, draft l.5
+  min_length: 18                # cutadapt --minimum-length, draft l.13
+  max_length: 25                # cutadapt --maximum-length, draft l.13
+  # Regex on the "Annotation" column of SPORTS' *_output.txt used to pick
+  # out miRNA entries when reconstructing gene counts (audit point R5).
+  annotation_regex: "^hsa-"
+
+# ---- Special case: groups merged at FASTQ level before mapping ------
+# In the draft, sample 11's two barcode units are concatenated before
+# mapping (all others are merged later at BAM level after dedup).
+merge_before_mapping: ["11"]
+
+# ---- Deduplication (P5, umi_tools) ----------------------------------
+dedup:
+  method: "unique"
+  extract_umi_method: "read_id"
+
+# ---- Condition grouping (P5) ----------------------------------------
+conditions:
+  control: ["1", "2", "3", "4", "5"]
+  KD: ["8", "9", "10", "11", "12"]
+
+# ---- Peak calling (P6, pyicoclip / pyicos) --------------------------
+peaks:
+  extend: 50
+  p_value: 0.01
+
+# ---- Peak-length histogram (P6, R/ggplot2) --------------------------
+plot:
+  binwidth: 20
+  xlim_min: 1
+  xlim_max: 500
+  width_in: 8
+  height_in: 6
+  dpi: 300
+
+# ---- Default resources (overridable per rule / via profile) ---------
+resources:
+  star_index_threads: 8
+  star_align_threads: 8
+  align_threads: 8
+  samtools_threads: 4
+  cutadapt_threads: 4
+  fastqc_threads: 1
+  bowtie_index_threads: 4
+  sports_threads: 4

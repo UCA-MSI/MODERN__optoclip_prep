@@ -1,0 +1,11 @@
+# Core Unix text tools (zcat/sed/awk/sort/comm/gzip).
+# Versions intentionally unpinned — pin before production (see install/).
+name: opticlip-base
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - coreutils
+  - gawk
+  - sed
+  - gzip
